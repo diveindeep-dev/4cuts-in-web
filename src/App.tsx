@@ -1,28 +1,18 @@
-import React, { useCallback, useRef, useState } from 'react';
-import Webcam from 'react-webcam';
-import styled from 'styled-components';
-
-const Preview = styled.img`
-  width: 180px;
-`;
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import Layout from './layouts';
+import Index from './pages';
+import GlobalStyle from './styles/GlobalStyle';
 
 function App() {
-  const [imgSrcs, setImgSrcs] = useState<string[]>([]);
-  const webcamRef = useRef<any>(null);
-
-  const capture = useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setImgSrcs((prev) => [...prev, imageSrc]);
-  }, [webcamRef, setImgSrcs]);
-
   return (
     <div className="App">
-      <h1>4CUTS in Web</h1>
-      <Webcam ref={webcamRef} screenshotFormat="image/jpeg" audio={false} />
-      <button onClick={capture}>📸</button>
-      {imgSrcs.map((imgSrc: string, i: number) => {
-        return <Preview key={i} src={imgSrc} alt={`take${i}`} />;
-      })}
+      <GlobalStyle />
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Index />} />
+        </Routes>
+      </Layout>
     </div>
   );
 }

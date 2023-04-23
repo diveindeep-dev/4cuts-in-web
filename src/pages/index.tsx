@@ -81,10 +81,8 @@ function Index() {
     <Div>
       <Title>
         <H1>
-          4CUTS
-          <br />
-          IN
-          <br />
+          4CUTS<br></br>
+          IN<br></br>
           WEB
         </H1>
       </Title>
@@ -92,13 +90,13 @@ function Index() {
         <Sub>Special Code</Sub>
         <Code>****</Code>
       </LINK>
-      <LINK to={`/photobooth`} state={{ frame: 'basic' }}>
+      <LINK to={`/photobooth`} state={{ frame: 'Basic' }}>
         <Sub>Basic</Sub>
         <Pic rotate={25}>
           <Mockup type={'basic'} />
         </Pic>
       </LINK>
-      <LINK to={`/photobooth`} state={{ frame: 'wide' }}>
+      <LINK to={`/photobooth`} state={{ frame: 'Wide' }}>
         <Sub>Wide</Sub>
         <Pic trans={100}>
           <Mockup type={'wide'} />

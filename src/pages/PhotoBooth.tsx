@@ -1,68 +1,11 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Webcam from 'react-webcam';
-import Mockup from '../components/frame/Mockup';
-import { aspectRatio } from '../styles/Frame';
+import { MutableRefObject, useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Title from '../components/Title';
+import Camera from '../components/Camera';
+import PreviewFullList from '../components/preivew/FullList';
 import styled from 'styled-components';
 import { colorAll, fontAll } from '../styles/Variables';
-import { bodyContainer, flexCenter, shutterStyle } from '../styles/Mixin';
-
-interface StyleProps {
-  type?: string;
-}
-
-const H2 = styled.h2`
-  font-size: 3.3rem;
-  font-weight: 100;
-`;
-
-const Pic = styled.div`
-  align-self: center;
-  border: 2px solid ${colorAll.main};
-  opacity: 0.2;
-  transform: rotate(-25deg);
-`;
-
-const Title = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  max-width: 320px;
-  padding: 20px;
-`;
-
-const ShutterWrap = styled.div`
-  ${flexCenter}
-  width: 90px;
-  height: 90px;
-`;
-
-const Shutter = styled.button`
-  ${shutterStyle()}
-`;
-
-const Camera = styled.div`
-  ${flexCenter}
-  padding: 20px;
-  background-color: ${colorAll.dark};
-`;
-
-const Blank = styled.div<StyleProps>`
-  ${flexCenter}
-  aspect-ratio: ${({ type }) => aspectRatio[`${type}`]};
-  border: 1px solid ${colorAll.line};
-  font-size: 1.3rem;
-`;
-
-const Preview = styled.img<StyleProps>`
-  aspect-ratio: ${({ type }) => aspectRatio[`${type}`]};
-`;
-
-const Previews = styled.div`
-  display: grid;
-  grid-gap: 10px;
-  place-items: center center;
-`;
+import { bodyContainer, flexCenter } from '../styles/Mixin';
 
 const Notice = styled.div`
   ${flexCenter}
@@ -110,86 +53,44 @@ const Grid = styled.div`
     ${Booth} {
       flex-direction: column;
     }
-    ${Previews} {
-      padding: 30px 0;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      & > ${Blank}, ${Preview} {
-        width: 100%;
-      }
-    }
-  }
-
-  &.wide {
-    ${Previews} {
-      padding: 0 30px;
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(4, 1fr);
-      & > ${Blank}, ${Preview} {
-        height: 190px;
-      }
-    }
-    ${Camera} {
-      flex-direction: column;
-    }
   }
 `;
 
 function PhotoBooth() {
   const location = useLocation();
-  const title: string = location.state.frame;
+  const navigate = useNavigate();
+  const [title, setTitle] = useState<string>('');
   const frameType: string = title.toLowerCase();
-  const webcamRef = useRef<any>(null);
   const [imgSrcs, setImgSrcs] = useState<string[]>([]);
   const [blank, setBlank] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8]);
 
-  const videoConstraints = {
-    aspectRatio: aspectRatio[frameType],
-  };
-
-  const capture = useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setImgSrcs((prev) => [...prev, imageSrc]);
-    setBlank((prev) => prev.filter((_, i) => i !== 0));
+  useEffect(() => {
+    if (!location.state) {
+      return navigate('/');
+    } else {
+      const frame: string = location.state.frame || 'Basic';
+      setTitle(frame);
+    }
   }, []);
+
+  const capture = useCallback(
+    (ref: MutableRefObject<any>) => {
+      if (imgSrcs.length >= 8) return;
+
+      const imageSrc = ref.current.getScreenshot();
+      setImgSrcs((prev) => [...prev, imageSrc]);
+      setBlank((prev) => prev.filter((_, i) => i !== 0));
+    },
+    [imgSrcs],
+  );
 
   return (
     <Grid className={frameType}>
-      <Title>
-        <H2>{title}</H2>
-        <Pic>
-          <Mockup type={frameType} />
-        </Pic>
-      </Title>
+      <Title title={title} type={frameType} />
       <Booth>
-        <Camera>
-          <Webcam
-            ref={webcamRef}
-            screenshotFormat="image/png"
-            audio={false}
-            mirrored={true}
-            videoConstraints={videoConstraints}
-          />
-          <ShutterWrap>
-            <Shutter onClick={capture} />
-          </ShutterWrap>
-        </Camera>
+        <Camera handleCapture={capture} type={frameType} />
         <PreviewContainer>
-          <Previews>
-            {imgSrcs.map((imgSrc: string, i: number) => {
-              return (
-                <Preview
-                  key={i}
-                  src={imgSrc}
-                  alt={`take${i}`}
-                  type={frameType}
-                />
-              );
-            })}
-            {blank.map((blank: number, i: number) => {
-              return <Blank key={i} type={frameType}>{`TAKE ${blank}`}</Blank>;
-            })}
-          </Previews>
+          <PreviewFullList type={frameType} srcs={imgSrcs} blanks={blank} />
           <Notice>
             You can take up to 8 pictures.<br></br>
             In the next step, you will select 4 pictures.

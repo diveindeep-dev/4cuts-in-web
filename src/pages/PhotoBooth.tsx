@@ -1,10 +1,19 @@
-import { MutableRefObject, useCallback, useEffect, useState } from 'react';
+import {
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import domtoimage from 'dom-to-image';
+import { saveAs } from 'file-saver';
 import Title from '../components/Title';
 import Camera from '../components/Camera';
 import PreviewFullList from '../components/preivew/FullList';
 import PreviewClickList from '../components/preivew/ClickList';
 import Frame from '../components/frame';
+import today from '../utils/date';
 import styled from 'styled-components';
 import { frameColors } from '../styles/Frame';
 import { colorAll, fontAll } from '../styles/Variables';
@@ -143,6 +152,7 @@ function PhotoBooth() {
   });
   const positions = ['first', 'second', 'third', 'fourth'];
   const [error, setError] = useState('');
+  const savedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!location.state) {
@@ -211,7 +221,24 @@ function PhotoBooth() {
     });
   };
 
-  const save = () => {};
+  const save = () => {
+    setPosition('');
+    const savedImg = savedRef.current;
+    if (savedImg) {
+      const option = {
+        width: savedImg.clientWidth * 2,
+        height: savedImg.clientHeight * 2,
+        style: {
+          transform: 'scale(2)',
+          'transform-origin': '0% 0%',
+        },
+      };
+      (async () => {
+        const generate = await domtoimage.toBlob(savedImg, option);
+        saveAs(generate, `${today('file')}-4cuts.png`);
+      })();
+    }
+  };
 
   return (
     <Grid className={frameType}>
@@ -241,7 +268,7 @@ function PhotoBooth() {
               );
             })}
           </Palette>
-          <Saved>
+          <Saved ref={savedRef}>
             <Frame
               type={frameType}
               handleClick={pickPosition}

@@ -1,18 +1,16 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { fontAll } from '../styles/Variables';
-import { bodyContainer } from '../styles/Mixin';
+import { bodyContainer, flexCenter } from '../styles/Mixin';
 
-const Title = styled.div`
+const Title = styled(Link)`
   font-size: 1.5rem;
   font-family: ${fontAll.main};
   font-weight: 900;
 `;
 
 const HEADER = styled.header`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  ${flexCenter}
   ${bodyContainer}
   height: 100px;
 `;
@@ -20,7 +18,7 @@ const HEADER = styled.header`
 function Header() {
   return (
     <HEADER>
-      <Title>4CUTS IN WEB</Title>
+      <Title to={'/'}>4CUTS IN WEB</Title>
     </HEADER>
   );
 }

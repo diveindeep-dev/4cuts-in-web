@@ -27,7 +27,7 @@ const List = styled.div`
   place-items: center;
 
   &.list-basic {
-    padding: 30px 0;
+    padding: 20px 10px;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(2, 1fr);
     & > div,
@@ -37,7 +37,7 @@ const List = styled.div`
   }
 
   &.list-wide {
-    padding: 0 30px;
+    padding: 0 50px;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(4, 1fr);
     & > div,

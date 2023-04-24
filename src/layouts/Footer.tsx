@@ -1,7 +1,6 @@
-import React from 'react';
 import styled from 'styled-components';
 import { colorAll, fontAll } from '../styles/Variables';
-import { bodyContainer } from '../styles/Mixin';
+import { bodyContainer, flexCenter } from '../styles/Mixin';
 
 const Text = styled.div`
   font-size: 1.2rem;
@@ -18,9 +17,7 @@ const Text = styled.div`
 `;
 
 const FOOTER = styled.footer`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  ${flexCenter}
   ${bodyContainer}
   min-height: 200px;
 `;

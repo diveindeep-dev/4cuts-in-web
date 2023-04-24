@@ -1,6 +1,6 @@
+import Mockup from './frame/Mockup';
 import styled from 'styled-components';
 import { colorAll } from '../styles/Variables';
-import Mockup from './frame/Mockup';
 
 interface TitleProps {
   title: string;
@@ -23,7 +23,7 @@ const TITLE = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 320px;
+  max-width: 220px;
   padding: 20px;
 `;
 

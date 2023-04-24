@@ -69,17 +69,42 @@ const Set = styled.div`
   z-index: 1;
 `;
 
-const Next = styled.div`
+const SideButton = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  width: 100%;
+  height: 50%;
+  color: ${colorAll.main};
+  font-size: 1.5rem;
+
+  &:hover {
+    cursor: pointer;
+    font-weight: 400;
+    background-color: ${colorAll.backTrans};
+  }
+`;
+
+const Up = styled(SideButton)`
+  align-items: flex-start;
+`;
+
+const Down = styled(SideButton)`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  padding: 40px;
-  height: 100%;
+
   div {
-    font-size: 1.3rem;
-    color: ${colorAll.line};
+    font-size: 1rem;
+    padding: 10px;
+    font-weight: 100;
   }
+`;
+
+const Side = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 const Grid = styled.div`
@@ -117,6 +142,7 @@ function PhotoBooth() {
     fourth: '',
   });
   const positions = ['first', 'second', 'third', 'fourth'];
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (!location.state) {
@@ -130,6 +156,8 @@ function PhotoBooth() {
   useEffect(() => {
     if (imgSrcs.length === 8) {
       setIsNext(true);
+    } else if (imgSrcs.length === 4) {
+      setError('');
     }
   }, [imgSrcs]);
 
@@ -157,6 +185,33 @@ function PhotoBooth() {
     setSelected({ ...selected, [currentPosition]: imgSrc });
     setPosition(positions[(current + 1) % 4]);
   };
+
+  const retake = () => {
+    setImgSrcs([]);
+    setBlank([1, 2, 3, 4, 5, 6, 7, 8]);
+    setIsNext(false);
+  };
+
+  const goNext = () => {
+    if (imgSrcs.length >= 4) {
+      setIsNext(true);
+    } else {
+      setError('You need at least 4 cuts for the next step.');
+    }
+  };
+
+  const reset = () => {
+    setPosition('first');
+    setColor(`#000000`);
+    setSelected({
+      first: '',
+      second: '',
+      third: '',
+      fourth: '',
+    });
+  };
+
+  const save = () => {};
 
   return (
     <Grid className={frameType}>
@@ -203,10 +258,15 @@ function PhotoBooth() {
           />
         </Set>
       )}
-      <Next>
-        <div>RESET</div>
-        <div>NEXT</div>
-      </Next>
+      <Side>
+        <Up onClick={!isNext ? retake : reset}>
+          {!isNext ? `RETAKE` : `RESET`}
+        </Up>
+        <Down onClick={!isNext ? goNext : save}>
+          <div>{error}</div>
+          {!isNext ? `NEXT` : `SAVE`}
+        </Down>
+      </Side>
     </Grid>
   );
 }

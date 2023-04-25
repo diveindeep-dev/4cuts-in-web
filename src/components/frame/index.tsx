@@ -1,7 +1,7 @@
 import Tag from './Tag';
 import styled from 'styled-components';
 import { aspectRatio, frameOrders, frameRatio } from '../../styles/Frame';
-import { colorAll, fontAll } from '../../styles/Variables';
+import { colorAll } from '../../styles/Variables';
 import { flexCenter } from '../../styles/Mixin';
 
 interface FrameProps {
@@ -19,12 +19,6 @@ interface StyleProps {
   isCurrent?: boolean;
   color?: string;
 }
-
-const NotSelect = styled.div`
-  font-size: 1.2rem;
-  font-family: ${fontAll.body};
-  font-weight: 100;
-`;
 
 const FramePic = styled.img`
   position: absolute;
@@ -97,10 +91,8 @@ function Frame(props: FrameProps) {
             alt="frame"
           />
         )}
-        {isSelectedImg ? (
+        {isSelectedImg && (
           <IMG src={isSelectedImg} alt={`${order}`} type={type} />
-        ) : (
-          <NotSelect>Pick Photo</NotSelect>
         )}
       </GridPosition>
     );

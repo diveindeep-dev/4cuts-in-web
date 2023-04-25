@@ -11,12 +11,12 @@ import { saveAs } from 'file-saver';
 import Title from '../components/Title';
 import Camera from '../components/Camera';
 import Frame from '../components/frame';
+import Previews from '../components/previews';
 import today from '../utils/date';
 import styled from 'styled-components';
 import { frameColors, frameOrders } from '../styles/Frame';
 import { colorAll, fontAll } from '../styles/Variables';
-import { bodyContainer, flexCenter } from '../styles/Mixin';
-import Previews from '../components/previews';
+import { SideButton, bodyContainer, flexCenter } from '../styles/Mixin';
 
 interface StyleProps {
   color?: string;
@@ -77,31 +77,21 @@ const Set = styled.div`
   z-index: 1;
 `;
 
-const SideButton = styled.div`
-  display: flex;
+const Up = styled(SideButton)`
   justify-content: center;
+  align-items: flex-start;
   padding: 40px 0;
   width: 100%;
   height: 50%;
-  color: ${colorAll.main};
-  font-size: 1.5rem;
-
-  &:hover {
-    cursor: pointer;
-    font-weight: 400;
-    background-color: ${colorAll.backTrans};
-  }
-`;
-
-const Up = styled(SideButton)`
-  align-items: flex-start;
 `;
 
 const Down = styled(SideButton)`
-  display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
+  padding: 40px 0;
+  width: 100%;
+  height: 50%;
 
   div {
     font-size: 1rem;

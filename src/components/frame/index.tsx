@@ -50,7 +50,7 @@ const FrameGrid = styled.div`
   grid-gap: 15px;
 
   &.basic,
-  &.special {
+  &.custom {
     grid-template-rows: repeat(4, 1fr);
   }
 

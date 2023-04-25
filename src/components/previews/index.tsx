@@ -28,7 +28,7 @@ const PREVIEWS = styled.div`
   grid-gap: 10px;
 
   &.list-basic,
-  &.list-special {
+  &.list-custom {
     padding: 20px 10px;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(2, 1fr);

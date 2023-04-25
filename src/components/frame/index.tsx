@@ -1,16 +1,17 @@
 import Tag from './Tag';
 import styled from 'styled-components';
-import { frameRatio, aspectRatio } from '../../styles/Frame';
+import { aspectRatio, frameOrders, frameRatio } from '../../styles/Frame';
 import { colorAll, fontAll } from '../../styles/Variables';
 import { flexCenter } from '../../styles/Mixin';
 
 interface FrameProps {
   type: string;
   selected: any;
-  handleClick: (position: string) => void;
-  positions: string[];
-  currentPosition: string;
+  handlePosition: (order: string) => void;
+  currentOrder: string;
+  folder?: string;
   color: string;
+  title?: string;
 }
 
 interface StyleProps {
@@ -25,29 +26,37 @@ const NotSelect = styled.div`
   font-weight: 100;
 `;
 
+const FramePic = styled.img`
+  position: absolute;
+  height: 100%;
+`;
+
 const IMG = styled.img<StyleProps>`
   width: 100%;
   height: 100%;
   aspect-ratio: ${({ type }) => aspectRatio[`${type}`]};
 `;
 
-const Photo = styled.div<StyleProps>`
+const GridPosition = styled.div<StyleProps>`
+  position: relative;
   ${flexCenter}
   aspect-ratio: ${({ type }) => aspectRatio[`${type}`]};
-  background-color: ${colorAll.backSub};
+  background-color: ${colorAll.line};
   border: ${({ isCurrent }) => isCurrent && `2px solid ${colorAll.white}`};
 `;
 
-const PhotoGrid = styled.div`
+const FrameGrid = styled.div`
   display: grid;
   grid-gap: 15px;
-  &.basic {
-    grid-template-rows: 1fr 1fr 1fr 1fr;
+
+  &.basic,
+  &.special {
+    grid-template-rows: repeat(4, 1fr);
   }
 
   &.wide {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: repeat(2, 1fr);
   }
 `;
 
@@ -57,9 +66,10 @@ const Container = styled.div`
   height: 100%;
 `;
 
-const FRAME = styled.div<StyleProps>`
+const Out = styled.div<StyleProps>`
+  display: flex;
+  flex-direction: column;
   position: relative;
-  width: 100%;
   padding: 15px 15px 0 15px;
   aspect-ratio: ${({ type }) => frameRatio[`${type}`]};
   background-color: ${({ color }) => color};
@@ -67,37 +77,42 @@ const FRAME = styled.div<StyleProps>`
 `;
 
 function Frame(props: FrameProps) {
-  const { type, selected, handleClick, positions, currentPosition, color } =
+  const { type, color, selected, handlePosition, currentOrder, folder, title } =
     props;
 
+  const framePositions = frameOrders.map((order: string, i: number) => {
+    const orderIndex = frameOrders.indexOf(order);
+    const isSelectedImg = selected[order];
+
+    return (
+      <GridPosition
+        key={i}
+        type={type}
+        onClick={() => handlePosition(order)}
+        isCurrent={currentOrder === order}
+      >
+        {type === 'custom' && (
+          <FramePic
+            src={require(`../../assets/${folder}/${orderIndex}.png`)}
+            alt="frame"
+          />
+        )}
+        {isSelectedImg ? (
+          <IMG src={isSelectedImg} alt={`${order}`} type={type} />
+        ) : (
+          <NotSelect>Pick Photo</NotSelect>
+        )}
+      </GridPosition>
+    );
+  });
+
   return (
-    <FRAME type={type} color={color}>
+    <Out type={type} color={color}>
       <Container>
-        <PhotoGrid className={type}>
-          {positions.map((position: string, i: number) => {
-            return (
-              <Photo
-                key={i}
-                type={type}
-                onClick={() => handleClick(position)}
-                isCurrent={currentPosition === position}
-              >
-                {selected[`${position}`] ? (
-                  <IMG
-                    src={selected[`${position}`]}
-                    alt={`${position}`}
-                    type={type}
-                  />
-                ) : (
-                  <NotSelect>Pick Photo</NotSelect>
-                )}
-              </Photo>
-            );
-          })}
-        </PhotoGrid>
-        <Tag />
+        <FrameGrid className={type}>{framePositions}</FrameGrid>
+        <Tag title={title} />
       </Container>
-    </FRAME>
+    </Out>
   );
 }
 

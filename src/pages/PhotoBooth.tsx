@@ -10,14 +10,13 @@ import domtoimage from 'dom-to-image';
 import { saveAs } from 'file-saver';
 import Title from '../components/Title';
 import Camera from '../components/Camera';
-import PreviewFullList from '../components/preivew/FullList';
-import PreviewClickList from '../components/preivew/ClickList';
 import Frame from '../components/frame';
 import today from '../utils/date';
 import styled from 'styled-components';
-import { frameColors } from '../styles/Frame';
+import { frameColors, frameOrders } from '../styles/Frame';
 import { colorAll, fontAll } from '../styles/Variables';
 import { bodyContainer, flexCenter } from '../styles/Mixin';
+import Previews from '../components/previews';
 
 interface StyleProps {
   color?: string;
@@ -140,9 +139,8 @@ function PhotoBooth() {
   const [title, setTitle] = useState<string>('');
   const frameType: string = title.toLowerCase();
   const [imgSrcs, setImgSrcs] = useState<string[]>([]);
-  const [blank, setBlank] = useState<number[]>([1, 2, 3, 4, 5, 6, 7, 8]);
   const [isNext, setIsNext] = useState<boolean>(false);
-  const [currentPosition, setPosition] = useState<string>('first');
+  const [currentOrder, setOrder] = useState<string>('first');
   const [pickedColor, setColor] = useState<string>(`#000000`);
   const [selected, setSelected] = useState<Cuts>({
     first: '',
@@ -150,7 +148,6 @@ function PhotoBooth() {
     third: '',
     fourth: '',
   });
-  const positions = ['first', 'second', 'third', 'fourth'];
   const [error, setError] = useState('');
   const savedRef = useRef<HTMLDivElement>(null);
 
@@ -177,13 +174,12 @@ function PhotoBooth() {
 
       const imageSrc = ref.current.getScreenshot();
       setImgSrcs((prev) => [...prev, imageSrc]);
-      setBlank((prev) => prev.filter((_, i) => i !== 0));
     },
     [imgSrcs],
   );
 
   const pickPosition = (position: string) => {
-    setPosition(position);
+    setOrder(position);
   };
 
   const pickColor = (color: string) => {
@@ -191,14 +187,13 @@ function PhotoBooth() {
   };
 
   const selectPhoto = (imgSrc: string) => {
-    const current = positions.indexOf(currentPosition);
-    setSelected({ ...selected, [currentPosition]: imgSrc });
-    setPosition(positions[(current + 1) % 4]);
+    const current = frameOrders.indexOf(currentOrder);
+    setSelected({ ...selected, [currentOrder]: imgSrc });
+    setOrder(frameOrders[(current + 1) % 4]);
   };
 
   const retake = () => {
     setImgSrcs([]);
-    setBlank([1, 2, 3, 4, 5, 6, 7, 8]);
     setIsNext(false);
   };
 
@@ -211,7 +206,7 @@ function PhotoBooth() {
   };
 
   const reset = () => {
-    setPosition('first');
+    setOrder('first');
     setColor(`#000000`);
     setSelected({
       first: '',
@@ -222,7 +217,7 @@ function PhotoBooth() {
   };
 
   const save = () => {
-    setPosition('');
+    setOrder('');
     const savedImg = savedRef.current;
     if (savedImg) {
       const option = {
@@ -245,9 +240,13 @@ function PhotoBooth() {
       <Title title={title} type={frameType} />
       {!isNext ? (
         <Booth>
-          <Camera handleCapture={capture} type={frameType} />
+          <Camera
+            handleCapture={capture}
+            type={frameType}
+            color={`${colorAll.dark}`}
+          />
           <PreviewContainer>
-            <PreviewFullList type={frameType} srcs={imgSrcs} blanks={blank} />
+            <Previews type={frameType} srcs={imgSrcs} />
             <Notice>
               You can take up to 8 pictures.<br></br>
               In the next step, you will select 4 pictures.
@@ -271,15 +270,14 @@ function PhotoBooth() {
           <Saved ref={savedRef}>
             <Frame
               type={frameType}
-              handleClick={pickPosition}
+              handlePosition={pickPosition}
               selected={selected}
-              positions={positions}
-              currentPosition={currentPosition}
+              currentOrder={currentOrder}
               color={pickedColor}
             />
           </Saved>
-          <PreviewClickList
-            type={frameType}
+          <Previews
+            type={`${frameType} set`}
             srcs={imgSrcs}
             handleClick={selectPhoto}
           />

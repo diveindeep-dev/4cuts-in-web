@@ -4,6 +4,10 @@ import styled from 'styled-components';
 import { fontAll } from '../../styles/Variables';
 import { flexCenter } from '../../styles/Mixin';
 
+interface TagProps{
+  title?: string;
+}
+
 const Title = styled.div`
   padding-bottom: 5px;
   font-size: 1.2rem;
@@ -35,11 +39,11 @@ const TAG = styled.div`
   color: white;
 `;
 
-function Tag() {
+function Tag({title = '4CUTS IN WEB'}: TagProps) {
   return (
     <TAG>
       <TextContainer>
-        <Title>4CUTS IN WEB</Title>
+        <Title>{title}</Title>
         <Date>{today()}</Date>
       </TextContainer>
       <IMG src={logo} alt="logo" />
